@@ -1,6 +1,6 @@
 class ButtonModel{
     String title;
-     dynamic metodo;
+    dynamic metodo;
     
     ButtonModel(
         {

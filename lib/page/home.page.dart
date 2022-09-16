@@ -2,6 +2,9 @@ import 'package:calculadora/models/button.model.dart';
 import 'package:calculadora/widgets/buttonrows.widget.dart';
 import 'package:flutter/material.dart';
 
+import 'dart:math';
+import 'package:math_expressions/math_expressions.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -11,6 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late String textresultados = "";
+  late String auxtextresultados = "";
+  String operador = "";
+  List<String> historico = [".",".",".","."];
+  List<String> ahistorico = ["operacion1","operacion2","operacion3","operacion4"];
+  bool enpantalla = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,20 +30,36 @@ class _HomePageState extends State<HomePage> {
           flex: 2,
           child: Container(
             //height: 100,
-            color: Colors.purpleAccent,
+            color: Color.fromARGB(255, 56, 57, 58),
             child: Row(
               children: [
-                Text( "Operaciones"),
+                Column(
+                  children: [
+                  Text( ahistorico[0], style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30),),
+                  Text( ahistorico[1], style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30)),
+                  Text( ahistorico[2], style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30)),
+                  Text( ahistorico[3], style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30))
+                  ])
               ],
             ),
           ),
         ),
         Container(
           height: 100,
-          color: Colors.black54,
+          color: Color.fromARGB(137, 7, 6, 6),
           child: Row(
             children: [
-              Text( textresultados),
+              Text( textresultados, style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20)),
             ],
           ),
         ),
@@ -42,53 +67,10 @@ class _HomePageState extends State<HomePage> {
           flex: 4,
           child: Container(
             height: 100,
-            color: Colors.white,
+            color: Color.fromARGB(255, 32, 32, 32),
             child:Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children:[
-                buttonrows([
-                  ButtonModel(title: "%", metodo: (){ 
-                    setState((){
-                      textresultados+="%";
-                      });
-                  }),
-                  ButtonModel(title: "CE", metodo: (){ 
-                    setState((){
-                      textresultados+="ce";
-                      });
-                  }),
-                  ButtonModel(title: "C", metodo: (){ 
-                    setState((){
-                      textresultados="";
-                      });
-                  }),
-                  ButtonModel(title: "<--", metodo: (){ 
-                    setState((){
-                      textresultados+="borrar";
-                      });
-                  }),
-                ]),
-                buttonrows([
-                  ButtonModel(title: "1/x", metodo: (){ 
-                    setState((){
-                      textresultados+="1/x";
-                      });
-                  }),
-                  ButtonModel(title: "pow", metodo: (){ 
-                    setState((){
-                      textresultados+="**";
-                      });
-                  }),
-                  ButtonModel(title: "sqrt", metodo: (){ setState((){
-                      textresultados+="sqrt";
-                      });
-                  }),
-                  ButtonModel(title: "/", metodo: (){ 
-                    setState((){
-                      textresultados+="/";
-                      });
-                  }),
-                ]),
                 buttonrows([
                   ButtonModel(title: "7", metodo: (){ 
                     setState((){
@@ -105,9 +87,21 @@ class _HomePageState extends State<HomePage> {
                       textresultados+="9";
                       });
                   }),
-                  ButtonModel(title: "*", metodo: (){ 
+                  ButtonModel(title: "/", metodo: (){ 
                     setState((){
-                      textresultados+="*";
+                      textresultados+="/";
+                      });
+                  }),
+                  ButtonModel(title: "<--", metodo: (){ 
+                    setState((){
+                      textresultados = textresultados.substring(0, textresultados.length - 1);
+                      });
+                  }),
+                  ButtonModel(title: "C", metodo: (){ 
+                    setState((){
+                      textresultados="";
+                      ahistorico = [""];
+                      historico=[""];
                       });
                   }),
                 ]),
@@ -127,9 +121,19 @@ class _HomePageState extends State<HomePage> {
                       textresultados+="6";
                       });
                   }),
-                  ButtonModel(title: "-", metodo: (){ 
+                  ButtonModel(title: "*", metodo: (){ 
                     setState((){
-                      textresultados+="-";
+                      textresultados+="*";
+                      });
+                  }),
+                  ButtonModel(title: "(", metodo: (){ 
+                    setState((){
+                      textresultados+="(";
+                      });
+                  }),
+                  ButtonModel(title: ")", metodo: (){ 
+                    setState((){
+                      textresultados+=")";
                       });
                   }),
                 ]),
@@ -149,18 +153,22 @@ class _HomePageState extends State<HomePage> {
                       textresultados+="3";
                       });
                   }),
-                  ButtonModel(title: "+", metodo: (){ 
+                  ButtonModel(title: "-", metodo: (){ 
                     setState((){
-                      textresultados+="+";
+                      textresultados+="-";
+                      });
+                  }),
+                  ButtonModel(title: "x²", metodo: (){ 
+                    setState((){
+                      textresultados+="x²";
+                      });
+                  }),
+                  ButtonModel(title: "√", metodo: (){ setState((){
+                      textresultados+="√";
                       });
                   }),
                 ]),
                 buttonrows([
-                  ButtonModel(title: "+/-", metodo: (){ 
-                    setState((){
-                      textresultados+="+/-";
-                      });
-                  }),
                   ButtonModel(title: "0", metodo: (){ 
                     setState((){
                       textresultados+="0";
@@ -171,9 +179,32 @@ class _HomePageState extends State<HomePage> {
                       textresultados+=",";
                       });
                   }),
+                  ButtonModel(title: "%", metodo: (){ 
+                    setState((){
+                      textresultados+="%";
+                      });
+                  }),
+                  ButtonModel(title: "+", metodo: (){ 
+                    setState((){
+                      textresultados+="+";
+                      });
+                  }),
                   ButtonModel(title: "=", metodo: (){
                     setState((){
                       textresultados+="=";
+                      try{
+                          Parser p = new Parser();
+                          ContextModel cm = new ContextModel();
+                          Expression exp = p.parse(textresultados);
+                          setState(() {
+                            textresultados = exp.evaluate(EvaluationType.REAL, cm).toString();
+                            auxtextresultados = auxtextresultados+" = "+exp.evaluate(EvaluationType.REAL, cm).toString();
+                          });
+                          historico.add(auxtextresultados);
+                          print("Resultado: $textresultados");
+                        }catch (error){
+                          textresultados = "ERROR";
+                        }
                       });
                   }),
                 ]),
